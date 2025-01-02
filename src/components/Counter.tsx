@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGesture } from '@use-gesture/react';
+import { useCounters } from '../context/CounterContext';
 
 interface CounterProps {
   targetValue: number;
@@ -8,25 +9,40 @@ interface CounterProps {
 }
 
 export const Counter = ({ targetValue, onTargetChange }: CounterProps) => {
-  const [count, setCount] = useState(0);
+  const { counters, activeCounterIndex, updateCounter } = useCounters();
+  const activeCounter = counters[activeCounterIndex];
   const [feedback, setFeedback] = useState<'increment' | 'decrement' | null>(null);
   const [isEditingTarget, setIsEditingTarget] = useState(false);
   const [tempTarget, setTempTarget] = useState(targetValue.toString());
+  const [swipeProgress, setSwipeProgress] = useState(0);
+  const [currentMovement, setCurrentMovement] = useState(0);
   const counterDisplayRef = useRef<HTMLDivElement>(null);
+  const swipeThreshold = 50; // Reduced threshold for more responsive feel
   
-  const progress = Math.min((count / targetValue) * 100, 100);
+  const progress = Math.min((activeCounter.count / targetValue) * 100, 100);
 
-  const handleIncrement = () => {
-    if (count < targetValue) {
-      setCount(prev => prev + 1);
+  const calculateSteps = (distance: number): number => {
+    // Exponential scaling: base * (growth_rate ^ (distance / threshold))
+    // Adjusted to give reasonable numbers for typical swipe distances
+    const base = 1;
+    const growthRate = 1.15;
+    const steps = Math.floor(base * Math.pow(growthRate, Math.abs(distance) / swipeThreshold));
+    return steps;
+  };
+
+  const handleIncrement = (amount: number = 1) => {
+    const newCount = Math.min(activeCounter.count + amount, targetValue);
+    if (newCount !== activeCounter.count) {
+      updateCounter(activeCounter.id, { count: newCount });
       setFeedback('increment');
       setTimeout(() => setFeedback(null), 300);
     }
   };
 
-  const handleDecrement = () => {
-    if (count > 0) {
-      setCount(prev => prev - 1);
+  const handleDecrement = (amount: number = 1) => {
+    const newCount = Math.max(activeCounter.count - amount, 0);
+    if (newCount !== activeCounter.count) {
+      updateCounter(activeCounter.id, { count: newCount });
       setFeedback('decrement');
       setTimeout(() => setFeedback(null), 300);
     }
@@ -47,25 +63,63 @@ export const Counter = ({ targetValue, onTargetChange }: CounterProps) => {
   };
 
   const bind = useGesture({
-    onDrag: ({ movement: [mx, my], direction: [dx, dy], tap, event }) => {
-      if (isEditingTarget) return; // Disable gestures while editing
+    onDrag: ({ movement: [, my], tap, event, active, last }) => {
+      if (isEditingTarget) return;
       
-      // Check if the event target is the counter display or its children
       if (event && counterDisplayRef.current?.contains(event.target as Node)) {
         return;
       }
       
       if (tap) {
         handleIncrement();
-      } else if (Math.abs(my) > 100) { // Increased minimum swipe distance
-        if (dy > 0) { // Swipe down
-          handleDecrement();
-        } else if (dy < 0) { // Swipe up
-          handleIncrement();
+        return;
+      }
+
+      setCurrentMovement(my);
+
+      // Calculate steps and progress
+      const steps = calculateSteps(my);
+      const baseProgress = Math.abs(my) / swipeThreshold;
+      const progress = baseProgress - Math.floor(baseProgress);
+      setSwipeProgress(progress);
+
+      // Show feedback during swipe
+      if (active && Math.abs(my) > 10) {
+        setFeedback(my > 0 ? 'decrement' : 'increment');
+      }
+
+      // Execute action when gesture ends
+      if (last && steps > 0) {
+        if (my > 0) {
+          handleDecrement(steps);
+        } else {
+          handleIncrement(steps);
+        }
+      }
+
+      // Clear feedback when gesture ends
+      if (!active) {
+        setSwipeProgress(0);
+        setCurrentMovement(0);
+        if (steps === 0) {
+          setFeedback(null);
         }
       }
     }
+  }, {
+    drag: {
+      delay: 0,
+      filterTaps: true,
+      threshold: 5,
+    }
   });
+
+  // Format the current steps for display
+  const formatSteps = (distance: number): string => {
+    if (Math.abs(distance) < 10) return '';
+    const steps = calculateSteps(distance);
+    return steps > 0 ? `×${steps}` : '';
+  };
 
   return (
     <div 
@@ -84,17 +138,18 @@ export const Counter = ({ targetValue, onTargetChange }: CounterProps) => {
       <motion.div 
         className="absolute inset-0 flex flex-col items-center justify-center text-4xl font-bold"
         animate={{
-          scale: feedback ? 1.1 : 1,
-          color: feedback === 'increment' ? 'rgb(34, 197, 94)' : feedback === 'decrement' ? 'rgb(239, 68, 68)' : 'rgb(0, 0, 0)'
+          scale: feedback ? 1 + (swipeProgress * 0.1) : 1,
+          color: feedback === 'increment' ? 'rgb(34, 197, 94)' : 
+                 feedback === 'decrement' ? 'rgb(239, 68, 68)' : 'rgb(0, 0, 0)'
         }}
-        transition={{ duration: 0.2 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
         <div 
           ref={counterDisplayRef}
           className="bg-white/80 px-6 py-3 rounded-lg shadow-lg cursor-pointer"
           onClick={handleCounterClick}
         >
-          <span>{count}</span>
+          <span>{activeCounter.count}</span>
           <span className="text-gray-400"> / {targetValue}</span>
         </div>
       </motion.div>
@@ -103,14 +158,24 @@ export const Counter = ({ targetValue, onTargetChange }: CounterProps) => {
       <AnimatePresence>
         {feedback && (
           <motion.div
-            initial={{ opacity: 0, y: feedback === 'increment' ? 20 : -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, y: feedback === 'increment' ? 20 : -20, scale: 0.5 }}
+            animate={{ 
+              opacity: swipeProgress || 1,
+              y: 0,
+              scale: swipeProgress || 1
+            }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             className={`absolute left-1/2 transform -translate-x-1/2 ${
               feedback === 'increment' ? 'bottom-1/4' : 'top-1/4'
             } text-2xl`}
           >
-            {feedback === 'increment' ? '↑' : '↓'}
+            <div className="flex flex-col items-center">
+              {feedback === 'increment' ? '↑' : '↓'}
+              <div className="text-sm mt-2 opacity-50">
+                {formatSteps(feedback === 'increment' ? -currentMovement : currentMovement)}
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -167,7 +232,7 @@ export const Counter = ({ targetValue, onTargetChange }: CounterProps) => {
       </AnimatePresence>
 
       {/* Gesture Hint */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-gray-500 bg-white/80 px-4 py-2 rounded-full">
+      <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 text-sm text-gray-500 bg-white/80 px-4 py-2 rounded-full">
         Tap or swipe up to increment • Swipe down to decrement • Tap counter to edit target
       </div>
     </div>

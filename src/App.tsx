@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { Counter } from './components/Counter';
+import { CounterProvider } from './context/CounterContext';
+import { CounterContainer } from './components/CounterContainer';
 
 function App() {
-  const [targetValue, setTargetValue] = useState(100);
-
   return (
-    <Counter 
-      targetValue={targetValue} 
-      onTargetChange={setTargetValue} 
-    />
+    <CounterProvider>
+      <CounterContainer />
+    </CounterProvider>
   );
 }
 

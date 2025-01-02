@@ -6,22 +6,25 @@ A mobile-first web application that allows users to create and manage multiple p
 ## Core Features
 
 ### Counter Management
-- Create multiple counters
-- Swipe left/right to switch between counters
+- Create multiple counters with + button
+- Swipe left/right to switch between counters with smooth transitions
 - Only one counter visible/active at a time
-- Set target value for each counter
+- Set target value for each counter through modal interface
 
 ### Counter Interaction
 - Increment counter by tapping anywhere on screen
-- Decrement counter by swiping top to bottom anywhere on screen
+- Increment/decrement exponentially with swipe up/down gestures
 - Visual progress bar fills from bottom to top
 - Fullscreen visualization for maximum impact
+- Real-time visual feedback during gestures
 
 ### User Interface
 - Minimalist, distraction-free design
-- Gesture-based navigation
+- Gesture-based navigation with visual feedback
 - Progress bar as main visual element
 - Current count and target displayed
+- Visual indicators for navigation state
+- Contextual hints for available actions
 
 ## Technical Requirements
 - Responsive web design
@@ -61,9 +64,19 @@ A mobile-first web application that allows users to create and manage multiple p
   - Progress percentage display
 
 ### Phase 2: Multi-Counter Support
-- Create multiple counters
-- Local storage integration
-- Basic swipe navigation
+- Create multiple counters with + button
+- Local storage integration for persistence
+- Horizontal swipe navigation between counters
+- Enhanced navigation features:
+  - Smooth transition animations
+  - Visual navigation indicators (dots)
+  - Contextual navigation hints
+  - Direction-aware animations
+  - Real-time drag feedback
+- State management:
+  - React Context for global state
+  - Persistent counter state
+  - Automatic state saving
 
 ### Phase 3: Polish
 - Smooth animations and transitions
