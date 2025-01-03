@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useGesture } from '@use-gesture/react';
 import { useCounters } from '../context/CounterContext';
 import { Counter } from './Counter';
@@ -61,7 +61,6 @@ interface DragState {
 
 export const CounterContainer = () => {
   const { counters, activeCounterIndex, setActiveCounterIndex, addCounter, updateCounter } = useCounters();
-  const [isDragging, setIsDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
   const activeCounter = counters[activeCounterIndex];
   const containerRef = useRef(null);
@@ -78,12 +77,11 @@ export const CounterContainer = () => {
   }, [activeCounter.id, updateCounter]);
 
   const bind = useGesture({
-    onDrag: useCallback(({ movement: [mx, my], velocity: [vx, vy], active, last }: DragState) => {
+    onDrag: useCallback(({ movement: [mx, my], velocity: [vx], active, last }: DragState) => {
       const isHorizontal = Math.abs(mx) > Math.abs(my);
 
       if (isHorizontal) {
         setDragX(active ? mx : 0);
-        setIsDragging(active);
 
         if (last && Math.abs(mx) > 100 && Math.abs(vx) > 0.1) {
           if (mx > 0 && activeCounterIndex > 0) {

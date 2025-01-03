@@ -84,15 +84,8 @@ const Counter = memo(({ targetValue, onTargetChange }: CounterProps) => {
   const [tempName, setTempName] = useState(activeCounter.name);
   const [tempColor, setTempColor] = useState(activeCounter.color);
   const counterDisplayRef = useRef<HTMLDivElement>(null);
-  const swipeThreshold = 50;
   
   const progress = Math.min((activeCounter.count / targetValue) * 100, 100);
-
-  const calculateSteps = useCallback((distance: number): number => {
-    const base = 1;
-    const growthRate = 1.15;
-    return Math.floor(base * Math.pow(growthRate, Math.abs(distance) / swipeThreshold));
-  }, [swipeThreshold]);
 
   const handleIncrement = useCallback((amount: number = 1) => {
     if (isEditingTarget) return;
@@ -103,16 +96,6 @@ const Counter = memo(({ targetValue, onTargetChange }: CounterProps) => {
       setTimeout(() => setFeedback(null), 200);
     }
   }, [activeCounter.count, activeCounter.id, isEditingTarget, targetValue, updateCounter]);
-
-  const handleDecrement = useCallback((amount: number = 1) => {
-    if (isEditingTarget) return;
-    const newCount = Math.max(activeCounter.count - amount, 0);
-    if (newCount !== activeCounter.count) {
-      updateCounter(activeCounter.id, { count: newCount });
-      setFeedback('decrement');
-      setTimeout(() => setFeedback(null), 200);
-    }
-  }, [activeCounter.count, activeCounter.id, isEditingTarget, updateCounter]);
 
   const handleTargetSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
