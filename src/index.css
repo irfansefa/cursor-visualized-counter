@@ -2,8 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
+@layer base {
+  body {
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Dark mode transition */
+  * {
+    @apply transition-colors duration-200;
+  }
+}
+
+/* Dark mode media query */
+@media (prefers-color-scheme: dark) {
+  html.dark {
+    @apply bg-gray-900;
+  }
 }

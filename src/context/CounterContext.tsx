@@ -4,6 +4,8 @@ interface Counter {
   id: string;
   count: number;
   targetValue: number;
+  name: string;
+  color: string;
 }
 
 interface CounterContextType {
@@ -28,7 +30,13 @@ export const useCounters = () => {
 export const CounterProvider = ({ children }: { children: React.ReactNode }) => {
   const [counters, setCounters] = useState<Counter[]>(() => {
     const saved = localStorage.getItem('counters');
-    return saved ? JSON.parse(saved) : [{ id: '1', count: 0, targetValue: 100 }];
+    return saved ? JSON.parse(saved) : [{
+      id: '1',
+      count: 0,
+      targetValue: 100,
+      name: 'Counter 1',
+      color: '#3B82F6' // default blue-500 color
+    }];
   });
   
   const [activeCounterIndex, setActiveCounterIndex] = useState(0);
@@ -43,6 +51,8 @@ export const CounterProvider = ({ children }: { children: React.ReactNode }) => 
       id: Date.now().toString(),
       count: 0,
       targetValue: 100,
+      name: 'Counter ' + (counters.length + 1),
+      color: '#3B82F6'
     };
     setCounters(prev => [...prev, newCounter]);
     setActiveCounterIndex(counters.length); // Switch to new counter

@@ -6,10 +6,12 @@ A mobile-first web application that allows users to create and manage multiple p
 ## Core Features
 
 ### Counter Management
-- Create multiple counters with + button
+- Create and delete counters with intuitive controls
 - Swipe left/right to switch between counters with smooth transitions
 - Only one counter visible/active at a time
-- Set target value for each counter through modal interface
+- Set and adjust target values through modal interface
+- Customize counter names and colors
+- Optional grid view for multiple counters
 
 ### Counter Interaction
 - Increment counter by tapping anywhere on screen
@@ -17,6 +19,7 @@ A mobile-first web application that allows users to create and manage multiple p
 - Visual progress bar fills from bottom to top
 - Fullscreen visualization for maximum impact
 - Real-time visual feedback during gestures
+- Smooth animations for all interactions
 
 ### User Interface
 - Minimalist, distraction-free design
@@ -25,6 +28,17 @@ A mobile-first web application that allows users to create and manage multiple p
 - Current count and target displayed
 - Visual indicators for navigation state
 - Contextual hints for available actions
+- Dark mode support with system theme detection
+- Responsive design for all screen sizes
+
+### Progressive Features
+- Offline functionality with PWA support
+- Local data persistence
+- Home screen installation
+- Push notifications for milestones
+- Background sync for data backup
+- Cross-device synchronization
+- Native-like mobile experience
 
 ## Technical Requirements
 - Responsive web design
@@ -96,7 +110,25 @@ A mobile-first web application that allows users to create and manage multiple p
   - Persistent theme preference
   - Color palette adjustments for both modes
 
-### Phase 5: Multi-Counter View
+### Phase 5: PWA Support
+- Progressive Web App implementation:
+  - Service worker setup
+  - Offline functionality
+  - App manifest configuration
+  - Install prompts
+  - App icons and splash screens
+- Enhanced mobile experience:
+  - Full-screen mode
+  - Home screen installation
+  - Native-like animations
+  - Touch feedback optimization
+- Performance optimizations:
+  - Asset caching strategies
+  - Background sync
+  - Push notifications support
+  - Lighthouse score improvements
+
+### Phase 6: Multi-Counter View
 - Column view of all counters:
   - Single-screen overview
   - Responsive grid layout

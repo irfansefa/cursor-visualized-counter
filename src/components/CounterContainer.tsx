@@ -7,7 +7,7 @@ import { useState, useRef, useCallback, memo } from 'react';
 const CounterDot = memo(({ isActive }: { isActive: boolean }) => (
   <motion.div
     className={`w-2 h-2 rounded-full ${
-      isActive ? 'bg-blue-500' : 'bg-gray-300'
+      isActive ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
     }`}
     animate={{
       scale: isActive ? 1.2 : 1,
@@ -22,7 +22,7 @@ CounterDot.displayName = 'CounterDot';
 const AddButton = memo(({ onClick }: { onClick: () => void }) => (
   <motion.button
     onClick={onClick}
-    className="absolute bottom-20 right-4 bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg hover:bg-blue-600 transition-colors"
+    className="absolute bottom-20 right-4 bg-blue-500 dark:bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
     whileHover={{ scale: 1.1 }}
     whileTap={{ scale: 0.95 }}
     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
@@ -38,7 +38,7 @@ const NavigationHints = memo(({ activeIndex, total }: { activeIndex: number; tot
   
   return (
     <motion.div 
-      className="absolute top-4 left-1/2 transform -translate-x-1/2 text-sm text-gray-500 bg-white/80 px-4 py-2 rounded-full"
+      className="absolute top-4 left-1/2 transform -translate-x-1/2 text-sm text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-800/80 px-4 py-2 rounded-full ml-8"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -118,7 +118,7 @@ export const CounterContainer = () => {
     <div 
       ref={containerRef}
       {...bind()}
-      className="relative h-screen w-full overflow-hidden bg-gray-100"
+      className="relative h-screen w-full overflow-hidden bg-gray-100 dark:bg-gray-900"
       style={{ touchAction: 'none' }}
     >
       {/* Current Counter */}
