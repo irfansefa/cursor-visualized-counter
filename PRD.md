@@ -83,3 +83,32 @@ A mobile-first web application that allows users to create and manage multiple p
 - Gesture refinements
 - UI/UX improvements
 - Performance optimization 
+
+### Phase 4: Personalization & Themes
+- Individual counter customization:
+  - Custom naming for each counter
+  - Color picker for counter progress bars
+  - Unique visual identities per counter
+- Theme support:
+  - Dark mode implementation
+  - System theme detection
+  - Theme toggle in UI
+  - Persistent theme preference
+  - Color palette adjustments for both modes
+
+### Phase 5: Multi-Counter View
+- Column view of all counters:
+  - Single-screen overview
+  - Responsive grid layout
+  - Compact counter representations
+- Enhanced interactions:
+  - Tap to increment individual counters
+  - Swipe gestures for value adjustment:
+    - Swipe left to decrease
+    - Swipe right to increase
+  - Visual feedback for gestures
+  - Smooth animations for value changes
+- Performance optimizations:
+  - Virtualized list for large numbers of counters
+  - Efficient rendering of multiple progress bars
+  - Optimized gesture handling for multiple elements 
